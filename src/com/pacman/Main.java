@@ -1,6 +1,5 @@
 package com.pacman;
 
-import javax.imageio.ImageIO;
 
 import com.pacman.engine.InputManager;
 
@@ -14,8 +13,7 @@ import java.io.PipedOutputStream;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        LevelMap map = LevelMap.loadFromImg(ImageIO.read(PacManGameGUI.class.getResourceAsStream("/pacmanlevel.png")));
-        PacManGameGUI game = new PacManGameGUI(map, 30);
+        PacManGameGUI game = new PacManGameGUI();
         KeyListener listener;
         try {
             PipedOutputStream pipedOut = new PipedOutputStream();

@@ -4,10 +4,12 @@ import com.pacman.engine.InputManager;
 import com.pacman.engine.AwtGraphicsAdapter;
 import com.pacman.engine.Drawer;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,14 +24,10 @@ public class PacManGameGUI extends PacManGame {
     private PacManPanel panel;
     private boolean playerWon;
     private boolean playerLost;
+    private int levelNo = 1;
 
-    public PacManGameGUI(LevelMap levelMap, int size) {
-        super(levelMap, size);
-    }
-
-    @Override
-    public void playGame() {
-        playGame(null);
+    public PacManGameGUI() throws IOException {
+        super(LevelMap.loadFromImg(ImageIO.read(PacManGameGUI.class.getResourceAsStream("/level1.png"))), 30);
     }
 
     public void playGame(KeyListener listener) {
@@ -85,7 +83,13 @@ public class PacManGameGUI extends PacManGame {
                     }
                 }
             } while (playAgain == null);
-            if (playAgain) {
+            if (levelNo < 3 && playAgain) {
+            	levelNo++;
+            	try {
+					this.levelMap = LevelMap.loadFromImg(ImageIO.read(PacManGameGUI.class.getResourceAsStream("/level" + levelNo + ".png")));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
                 setup();
                 super.playGame();
             } else {
@@ -206,12 +210,11 @@ public class PacManGameGUI extends PacManGame {
 
                 String s = playerWon ? "You win!" : "You lose!";
                 drawText(g, centerX, y, size * 4, s);
-                System.out.println(g.getFontMetrics().getHeight());
                 y += size * 4;
                 drawText(g, centerX, y, size * 3 / 2, String.format("Score: % 3d", getScore()));
 
                 y += size * 3 / 2;
-                drawText(g, centerX - panelWidth / 4, y, size * 3 / 2, "A - Play again");
+                drawText(g, centerX - panelWidth / 4, y, size * 3 / 2, "A - Next lvl");
                 drawText(g, centerX + panelWidth / 4, y, size * 3 / 2, "B - Quit");
             }
         }
