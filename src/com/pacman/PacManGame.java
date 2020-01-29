@@ -49,6 +49,7 @@ public abstract class PacManGame {
     private long powerupTimeoutTime;
     private long nextGhostSpawnTime;
     private boolean powerupActive = false;
+    private int levelNo = 0;
 
     public PacManGame(LevelMap levelMap, int size) {
         if (instance == null) instance = this;
@@ -128,7 +129,7 @@ public abstract class PacManGame {
 
     private void setUpLevel() {
         pacMan = new PacMan(levelMap.spawnX() * size, levelMap.spawnY() * size, size, PACMAN_COLOR, Color.BLACK);
-        pacMan.setSpeed(Utils.round(DEF_PACMAN_SPEED * size));
+        pacMan.setSpeed(Utils.round(DEF_PACMAN_SPEED * size * (levelNo)));
         ghosts = new Ghost[4];
         resetPellets();
         resetPowerups();
@@ -204,16 +205,16 @@ public abstract class PacManGame {
             powerupTimeoutTime = System.currentTimeMillis() + POWERUP_TIME;
             Arrays.stream(ghosts).filter(Objects::nonNull).forEach(g -> {
                 g.setFleeing(true);
-                g.setSpeed(g.getSpeed() * 2 / 3);
             });
+            pacMan.setSpeed(Utils.round(DEF_PACMAN_SPEED * size * (levelNo) * 1.25));
         }
     }
 
     private void stopPowerup() {
         Arrays.stream(ghosts).filter(Objects::nonNull).forEach(g -> {
             g.setFleeing(false);
-            g.setSpeed(Utils.round(DEF_GHOST_SPEED * size));
         });
+        pacMan.setSpeed(Utils.round(DEF_PACMAN_SPEED * size * (levelNo)));
         powerupActive = false;
     }
 
@@ -278,12 +279,20 @@ public abstract class PacManGame {
             }
             if (index == -1) return;
             Ghost g = new Ghost(levelMap.spawnX() * size, levelMap.spawnY() * size, size, GHOST_COLORS[index], GHOST_FLEE_COLOR);
-            g.setSpeed(Utils.round(DEF_GHOST_SPEED * size));
+            g.setSpeed(Utils.round(DEF_GHOST_SPEED * size * (levelNo)));
             setBehavior(g, index);
             ghosts[index] = g;
             System.out.println("Spawned ghost!");
             nextGhostSpawnTime = System.currentTimeMillis() + GHOST_SPAWN_INTERVAL;
         }
+    }
+
+    protected void setLevel(int newLevelNo) {
+    	levelNo = newLevelNo;
+    }
+    
+    protected int getLevel() {
+    	return levelNo;
     }
 
     public int getSize() {

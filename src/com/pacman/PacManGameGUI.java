@@ -24,7 +24,7 @@ public class PacManGameGUI extends PacManGame {
     private PacManPanel panel;
     private boolean playerWon;
     private boolean playerLost;
-    private int levelNo = 1;
+    private int currentLevel;
 
     public PacManGameGUI() throws IOException {
         super(LevelMap.loadFromImg(ImageIO.read(PacManGameGUI.class.getResourceAsStream("/level1.png"))), 30);
@@ -48,6 +48,8 @@ public class PacManGameGUI extends PacManGame {
     }
 
     private void setup() {
+    	currentLevel = getLevel();
+    	setLevel(currentLevel + 1);
         playerWon = false;
         playerLost = false;
         panel.updateInfo();
@@ -83,10 +85,9 @@ public class PacManGameGUI extends PacManGame {
                     }
                 }
             } while (playAgain == null);
-            if (levelNo < 3 && playAgain) {
-            	levelNo++;
+            if (currentLevel < 3 && playAgain) {
             	try {
-					this.levelMap = LevelMap.loadFromImg(ImageIO.read(PacManGameGUI.class.getResourceAsStream("/level" + levelNo + ".png")));
+					this.levelMap = LevelMap.loadFromImg(ImageIO.read(PacManGameGUI.class.getResourceAsStream("/level" + currentLevel + ".png")));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -214,7 +215,8 @@ public class PacManGameGUI extends PacManGame {
                 drawText(g, centerX, y, size * 3 / 2, String.format("Score: % 3d", getScore()));
 
                 y += size * 3 / 2;
-                drawText(g, centerX - panelWidth / 4, y, size * 3 / 2, "A - Next lvl");
+                if(getLevel() < 3)
+                	drawText(g, centerX - panelWidth / 4, y, size * 3 / 2, "A - Next level");
                 drawText(g, centerX + panelWidth / 4, y, size * 3 / 2, "B - Quit");
             }
         }
